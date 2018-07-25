@@ -1,5 +1,6 @@
 package com.pyy.security.browser.config;
 
+import com.pyy.security.validate.ValidateCodeFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * 浏览器Security配置类
@@ -31,6 +33,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
     @Qualifier("pyyAuthenticationFailureHandler")
     private AuthenticationFailureHandler pyyAuthenticationFailureHandler;
 
+    @Autowired
+    @Qualifier("validateCodeFilter")
+    private ValidateCodeFilter validateCodeFilter;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -42,7 +48,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin()
+
+        // 添加验证码过滤器到用户名密码验证过滤器前面
+        http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin()
                 // 当检测到请求需要认证的时候，跳转到我们的自定义控制器上
                 .loginPage("/authentication/require")
                 // 处理登录请求的地址
@@ -55,7 +64,10 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/authentication/require", browserProperties.getLoginPage()).permitAll()
+                .antMatchers(
+                        "/authentication/require",
+                        "/code/image",
+                        browserProperties.getLoginPage()).permitAll()
                 .anyRequest()
                 .authenticated()
 

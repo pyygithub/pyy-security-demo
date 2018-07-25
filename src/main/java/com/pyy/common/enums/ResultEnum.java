@@ -13,6 +13,7 @@ public enum ResultEnum {
     NOT_FOUND(404, "访问地址不存在"),
     METHOD_NOT_ALLOWED(405, "请求方式错误"),
     INTERNAL_SERVER_ERROR(500, "未知异常，请联系管理员"),
+    LOGIN_FAILURE(21, "用户名或密码错误"),
     LOGIN_SUCCESS(10, "登录成功");
 
 

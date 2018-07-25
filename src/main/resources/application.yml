@@ -35,6 +35,11 @@ pyysecurity:
   browser:
     loginPage: /signIn.html
     loginHandlerUrl: /authentication/login
+  image:
+    length: 4
+    width: 67
+    height: 23
+    url: /user,/user/*
 
 security:
   basic:

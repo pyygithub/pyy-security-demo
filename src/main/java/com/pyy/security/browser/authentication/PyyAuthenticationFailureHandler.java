@@ -1,8 +1,9 @@
 package com.pyy.security.browser.authentication;
 
 import com.alibaba.fastjson.JSON;
+import com.pyy.common.enums.ResultEnum;
+import com.pyy.modules.demo.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,8 @@ import java.io.IOException;
 public class PyyAuthenticationFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        log.info("【用户认证】登录失败");
+        log.info("【用户认证】登录失败,e={}",e.getMessage());
         httpServletResponse.setContentType("application/json;charset=utf-8");
-        httpServletResponse.getWriter().write(JSON.toJSONString(e));
+        httpServletResponse.getWriter().write(JSON.toJSONString(new ResultVO(21,e.getMessage())));
     }
 }
