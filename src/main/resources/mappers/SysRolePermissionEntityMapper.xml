@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pyy.security.browser.dao.SysRolePermissionEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.pyy.security.browser.model.SysRolePermissionEntityKey" >
+    <id column="role_id" property="roleId" jdbcType="VARCHAR" />
+    <id column="permis_id" property="permisId" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.pyy.security.browser.model.SysRolePermissionEntityKey" >
+    delete from sys_permission_role
+    where role_id = #{roleId,jdbcType=VARCHAR}
+      and permis_id = #{permisId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.pyy.security.browser.model.SysRolePermissionEntityKey" >
+    insert into sys_permission_role (role_id, permis_id)
+    values (#{roleId,jdbcType=VARCHAR}, #{permisId,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.pyy.security.browser.model.SysRolePermissionEntityKey" >
+    insert into sys_permission_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="permisId != null" >
+        permis_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="roleId != null" >
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="permisId != null" >
+        #{permisId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>
