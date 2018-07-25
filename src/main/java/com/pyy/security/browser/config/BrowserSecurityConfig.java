@@ -7,11 +7,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 /**
  * 浏览器Security配置类
@@ -42,6 +47,23 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        //启动的时候就初始化表，注意，就在第一次启动的时候执行，以后要注释掉
+        //tokenRepository.setCreateTableOnStartup(true);
+        return tokenRepository;
+    }
+
+
+
     public static void main(String[] args) {
         System.out.println(new BCryptPasswordEncoder().encode("123456"));
     }
@@ -51,7 +73,7 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 添加验证码过滤器到用户名密码验证过滤器前面
         http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
-                .formLogin()
+            .formLogin()
                 // 当检测到请求需要认证的时候，跳转到我们的自定义控制器上
                 .loginPage("/authentication/require")
                 // 处理登录请求的地址
@@ -61,9 +83,14 @@ public class BrowserSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(authenticationSuccessHandler)
                 // 配置认证失败后处理器
                 .failureHandler(pyyAuthenticationFailureHandler)
+                .and()
+            .rememberMe()
+                .tokenRepository(persistentTokenRepository())
+                .tokenValiditySeconds(browserProperties.getTokenValiditySeconds())
+                .userDetailsService(userDetailsService)
 
                 .and()
-                .authorizeRequests()
+            .authorizeRequests()
                 .antMatchers(
                         "/authentication/require",
                         "/code/image",

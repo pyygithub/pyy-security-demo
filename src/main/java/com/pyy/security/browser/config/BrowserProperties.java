@@ -1,5 +1,7 @@
 package com.pyy.security.browser.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,30 +12,17 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConfigurationProperties(prefix = "pyysecurity.browser")
+@Setter
+@Getter
 public class BrowserProperties {
-    /**
-     * 登录页面地址
-     */
+    /** 登录页面地址*/
     private String loginPage = "/signIn.html";
 
-    /**
-     * 登录后台操作地址
-     */
+    /** 登录后台操作地址*/
     private String loginHandlerUrl = "/authentication/login";
 
-    public String getLoginPage() {
-        return loginPage;
-    }
+    /** token失效 时间*/
+    private int tokenValiditySeconds = 3600;
 
-    public void setLoginPage(String loginPage) {
-        this.loginPage = loginPage;
-    }
 
-    public String getLoginHandlerUrl() {
-        return loginHandlerUrl;
-    }
-
-    public void setLoginHandlerUrl(String loginHandlerUrl) {
-        this.loginHandlerUrl = loginHandlerUrl;
-    }
 }

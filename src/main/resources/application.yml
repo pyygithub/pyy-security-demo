@@ -35,6 +35,7 @@ pyysecurity:
   browser:
     loginPage: /signIn.html
     loginHandlerUrl: /authentication/login
+    tokenValiditySeconds: 3600
   image:
     length: 4
     width: 67
